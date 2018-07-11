@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
-import { Card, CardItem, Container, Content, Thumbnail, Icon, Button} from 'native-base';
+import { Card, CardItem, Container, Content, Thumbnail, Icon, Button } from 'native-base';
 import { red, orange, blue, lightPurp, pink, white } from '../utils/colors';
 import CardComponent from './CardComponent';
+import {
+    LoginButton, ShareDialog, GraphRequest, AccessToken,
+    GraphRequestManager
+} from 'react-native-fbsdk';
 
 class SocialMediaFeed extends Component {
     static navigationOptions = {
@@ -13,30 +17,118 @@ class SocialMediaFeed extends Component {
     }
     constructor(props) {
         super(props);
-       
-      }
+        this.state = {
+            socialmediafeed: [],
+            accessToken: "",
+            feed: []
+        }
+    }
 
-      componentDidMount(){
-      }
+    componentDidMount() {
+        AccessToken.getCurrentAccessToken().then(
+            (data) => {
+                const a = data.accessToken.toString();
+                this.setState({accessToken:a},this.getSocialMediaFeed);
+               
+            }
+        )
+    }
+
+    getSocialMediaFeed(){
+        const entry = this.state
+        return fetch(`https://visa-engage.appspot.com/fetchFeeds?userId=suraj_test`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ socialmediafeed: responseJson },this.getInformation);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    getInformation(){
+        fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
+            .then((response) => response.json())
+                .then((responseJson) => { 
+                    var page_access_token = responseJson.data[1].access_token;
+                    this.setState({
+                        page_access_token: page_access_token
+                    })
+                })
+                .then(() => {
+                    var page_access_token = this.state.page_access_token;
+                    this.state.socialmediafeed.map((x) => {
+                        fetch(`https://graph.facebook.com/${x.postId}?fields=message,full_picture,permalink_url&access_token=${page_access_token}`)
+                        .then((response) => response.json())
+                        .then((responseJson) => {
+                            if(!responseJson.hasOwnProperty('error')){
+                                this.test(responseJson);
+                               
+                            }
+                        });
+                    });
+                })
+                .catch(error =>
+                    this.setState({
+                        isLoading: false,
+                        message: 'Something bad happened ' + error
+                    }));
+
+    }
+
+    test(responseJson){
+        var joined = this.state.feed.concat(responseJson);
+        this.setState({ feed : joined });
+    }
+
+
 
 
     render() {
         const uri = "https://facebook.github.io/react-native/docs/assets/favicon.png";
-        return (
+        const feed = this.state.feed;
+
+        if(feed.length>0){ 
+            return (
             <Container style={styles.container}>
                 <View style={styles.item}>
-                <View style={styles.thumbnail}>
-                <Thumbnail source={{uri: uri}} />
+                    <View style={styles.thumbnail}>
+                        <Thumbnail source={{ uri: uri }} />
+                    </View>
+                    <Text style={styles.noDataText}>👋 Share your post on social media to earn cashback!</Text>
                 </View>
-                    <Text style={styles.noDataText}>👋 Share your post on social media to earn cashback!</Text>                
-                </View>
+                <LoginButton
+                publishPermissions={["manage_pages", "publish_pages"]}
+                onLoginFinished={
+                    (error, result) => {
+                        if (error) {
+                            alert("login has error: " + result.error);
+                        } else if (result.isCancelled) {
+                            alert("login is cancelled.");
+                        } else {
+                            AccessToken.getCurrentAccessToken().then(
+                                (data) => {
+                                    const a = data.accessToken.toString();
+                                    this.setState({accessToken:a},this.getSocialMediaFeed);
+                                   
+                                }
+                            )
+                        }
+                    }
+                }
+                onLogoutFinished={() => alert("logout.")} />
                 <Content>
-                    <CardComponent imageSource="1" likes="101" />
-                    <CardComponent imageSource="2" likes="201" />
-                    <CardComponent imageSource="3" likes="301" />
+                {this.state.feed.map((x) => (
+                    
+                    <CardComponent imageSource="1" likes="101" message={x.message} id={x.id} picture={x.full_picture} link={x.permalink_url}/>
+                    
+                ))}
                 </Content>
             </Container>
         )
+    } else {
+        return null;
+           }
     }
 }
 
@@ -50,7 +142,7 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         paddingBottom: 20
     },
-    thumbnail:{
+    thumbnail: {
         alignItems: 'center'
     },
     item: {

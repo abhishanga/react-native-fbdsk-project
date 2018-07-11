@@ -21,12 +21,13 @@ class CardComponent extends Component {
         super(props);
         const shareLinkContent = {
             contentType: 'link',
-            contentUrl: 'https://bit.ly/2KKoa1C',
+            contentUrl: props.link,
             contentDescription: 'Facebook sharing is easy!'
         };
 
-        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '' ,text: ''};
+        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '' ,text: '',message:props.message,link: props.link,id:props.id,picture:props.picture};
     }
+
 
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
@@ -73,15 +74,6 @@ class CardComponent extends Component {
                 this.setState({ accessToken: data.accessToken.toString() }, this.fetchComments);
             }
         );
-
-        // Create a graph request asking for user information with a callback to handle the response.
-        //   const infoRequest = new GraphRequest(
-        //     "/184571459071393_197049441156928/comments?message=Abhi",
-        //     "post",
-        //     this._responseInfoCallback,
-        //   );
-        //   // Start the graph request.
-        //   new GraphRequestManager().addRequest(infoRequest).start();
     }
 
     fetchComments() {
@@ -92,7 +84,7 @@ class CardComponent extends Component {
                 this.setState({
                     page_access_token: page_access_token
                 }, () => {
-                    fetch(`https://graph.facebook.com/184571459071393_197782841083588/comments?message=${this.state.text}&access_token=${this.state.page_access_token}`, {
+                    fetch(`https://graph.facebook.com/${this.state.id}/comments?message=${this.state.text}&access_token=${this.state.page_access_token}`, {
                     method: 'POST'
                     }).then((response) => {
                         console.log(response);
@@ -110,12 +102,11 @@ class CardComponent extends Component {
         return fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
         .then((response) => response.json())
             .then((responseJson) => {
-                debugger;
                 var page_access_token = responseJson.data[1].access_token;
                 this.setState({
                     page_access_token: page_access_token
                 }, () => {
-                    fetch(`https://graph.facebook.com/184571459071393_197782841083588/likes?access_token=${this.state.page_access_token}`, {
+                    fetch(`https://graph.facebook.com/${this.state.id}/likes?access_token=${this.state.page_access_token}`, {
                     method: 'POST'
                     }).then((response) => {
                         console.log(response);
@@ -130,17 +121,20 @@ class CardComponent extends Component {
     }
 
     render() {
-
+        const uri = this.state.picture;
         return (
             <Card>
                 <CardItem>
-                    <Body>
+                    
+                    <Left>
+                    <Thumbnail source={{uri: uri}} />
+                    </Left>
+                    <Right>
                         <Text>
-                            <Text style={{ fontWeight: "900" }}>Tyler
-                            </Text>
-                            Ea do Lorem occaecat laborum do. Minim ullamco ipsum minim eiusmod dolore cupidatat magna exercitation amet proident qui. Est do irure magna dolor adipisicing do quis labore excepteur. Commodo veniam dolore cupidatat nulla consectetur do nostrud ea cupidatat ullamco labore. Consequat ullamco nulla ullamco minim.
+                            {this.state.message}
                         </Text>
-                    </Body>
+                        </Right>
+                    
                 </CardItem>
                 <CardItem style={{ height: 45 }}>
                     <Left>

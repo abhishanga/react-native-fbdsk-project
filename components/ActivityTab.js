@@ -29,7 +29,6 @@ class ActivityTab extends Component {
         .then((response) => response.json())
         .then((responseJson) => {
             this.setState({activity: responseJson});
-            console.log(responseJson);
         })
             .catch((error) => {
                 console.error(error);
