@@ -15,7 +15,7 @@ class CardComponent extends Component {
         super(props);
         const shareLinkContent = {
           contentType: 'link',
-          contentUrl: 'https://www.facebook.com/',
+          contentUrl: 'https://bit.ly/2KKoa1C',
           contentDescription: 'Facebook sharing is easy!'
         };
     

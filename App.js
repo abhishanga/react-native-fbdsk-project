@@ -4,13 +4,14 @@ import {
   createStackNavigator,
 } from 'react-navigation';
 import MainScreen from './components/MainScreen';
+import LoginScreen from './components/LoginScreen';
 
 import { purple, white } from './utils/colors'
 
 
 const RootStack = createStackNavigator(
   {
-    Home: MainScreen,
+    Home: LoginScreen,
     Profile: MainScreen,
   },
   {

@@ -16,6 +16,8 @@ class SocialMediaFeed extends Component {
        
       }
 
+      componentDidMount(){
+      }
 
 
     render() {
