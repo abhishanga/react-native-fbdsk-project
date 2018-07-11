@@ -33,7 +33,6 @@ export default class LoginScreen extends Component {
         const entry = this.state
         return fetch(`https://visa-engage.appspot.com/validateUser?userId=${this.state.username}&password=${this.state.password}`)
             .then((responseJson) => {
-                debugger;
                 if (responseJson.status === 200) {
                     
                     this.props.navigation.navigate('Profile', { username: this.state.username })
