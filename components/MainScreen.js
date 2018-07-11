@@ -8,6 +8,7 @@ import {
 
 import SocialMediaFeed from "./SocialMediaFeed.js";
 import RewardsTab from './RewardsTab';
+import MerchantEnrollment from "./MerchantEnrollment";
 import ActivityTab from './ActivityTab';
 import { TabNavigator } from 'react-navigation'
 import { Icon } from 'native-base'
@@ -34,6 +35,9 @@ class MainScreen extends Component {
             },
             ActivityTab: {
                 screen: ActivityTab
+            },
+            MerchantEnrollment: {
+                screen: MerchantEnrollment
             }
         }, {
                 animationEnabled: true,
