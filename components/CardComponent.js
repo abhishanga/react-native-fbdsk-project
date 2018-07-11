@@ -9,7 +9,7 @@ import {
     Image
 } from "react-native";
 
-import { Card, CardItem, Content, Thumbnail, Body, Left, Right, Icon, Textarea, Form, Button } from 'native-base';
+import { Card, CardItem, Content, Thumbnail,Body, Left, Right, Icon, Textarea, Form, Button } from 'native-base';
 import {
     LoginButton, ShareDialog, GraphRequest, AccessToken,
     GraphRequestManager
@@ -25,7 +25,17 @@ class CardComponent extends Component {
             contentDescription: 'Facebook sharing is easy!'
         };
 
-        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '' ,text: '',message:props.message,link: props.link,id:props.id,picture:props.picture};
+        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '', text: '', message: props.message, link: props.link, id: props.id, picture: props.picture,showLike:false };
+    }
+
+    componentDidMount() {
+        AccessToken.getCurrentAccessToken().then(
+            (data) => {
+                const a = data.accessToken.toString();
+                this.setState({ accessToken: a });
+
+            }
+        )
     }
 
 
@@ -50,7 +60,7 @@ class CardComponent extends Component {
                 if (result.isCancelled) {
                     alert('Share cancelled');
                 } else {
-                    alert('Share success with postId: ' + result.postId);
+                    alert('Share this post on Facebook');
                 }
             },
             function (error) {
@@ -78,16 +88,16 @@ class CardComponent extends Component {
 
     fetchComments() {
         return fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
-        .then((response) => response.json())
+            .then((response) => response.json())
             .then((responseJson) => {
                 var page_access_token = responseJson.data[1].access_token;
                 this.setState({
                     page_access_token: page_access_token
                 }, () => {
                     fetch(`https://graph.facebook.com/${this.state.id}/comments?message=${this.state.text}&access_token=${this.state.page_access_token}`, {
-                    method: 'POST'
+                        method: 'POST'
                     }).then((response) => {
-                        console.log(response);
+                        alert('You have commented on this post on Facebook');
                     });
                 })
             })
@@ -98,18 +108,18 @@ class CardComponent extends Component {
                 }));
     }
 
-    handleLike(){
+    handleLike() {
         return fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
-        .then((response) => response.json())
+            .then((response) => response.json())
             .then((responseJson) => {
                 var page_access_token = responseJson.data[1].access_token;
                 this.setState({
                     page_access_token: page_access_token
                 }, () => {
                     fetch(`https://graph.facebook.com/${this.state.id}/likes?access_token=${this.state.page_access_token}`, {
-                    method: 'POST'
+                        method: 'POST'
                     }).then((response) => {
-                        console.log(response);
+                        alert('You have liked this post on Facebook');
                     });
                 })
             })
@@ -125,21 +135,23 @@ class CardComponent extends Component {
         return (
             <Card>
                 <CardItem>
-                    
+
                     <Left>
-                    <Thumbnail source={{uri: uri}} />
+                        <Thumbnail source={{ uri: uri }} />
+
+                        <Body>
+                            <Text>
+                                {this.state.message}
+                            </Text>
+                        </Body>
                     </Left>
-                    <Right>
-                        <Text>
-                            {this.state.message}
-                        </Text>
-                        </Right>
-                    
                 </CardItem>
                 <CardItem style={{ height: 45 }}>
                     <Left>
                         <Button transparent>
-                            <Icon type="FontAwesome" name="facebook-official" style={{ color: '#3B5998' }} onPress={this.shareLinkWithShareDialog.bind(this)} />
+                            <Icon type="FontAwesome" name="facebook-official" style={{ color: '#3B5998' }} onPress={() => {
+                                this.setModalVisible(true);
+                            }} />
                         </Button>
                         <Button transparent>
                             <Icon type="FontAwesome" name="instagram" style={{ color: '#e4405f' }} onPress={() => {
@@ -160,12 +172,12 @@ class CardComponent extends Component {
                     onRequestClose={() => {
                         alert('Modal has been closed.');
                     }}>
-                    <View style={{ marginTop: 22 }}>
+                    <View style={styles.modalContainer}>
                         <View>
-                        <TouchableHighlight
-                        onPress={this.handleLike.bind(this)}>
-                        <Text>Likel</Text>
-                    </TouchableHighlight>
+                            <TouchableHighlight
+                                onPress={this.handleLike.bind(this)}>
+                                <Text>Like</Text>
+                            </TouchableHighlight>
                             <TouchableHighlight
                                 onPress={() => {
                                     this.setTextAreaVisible(!this.state.textareaVisible);
@@ -186,35 +198,39 @@ class CardComponent extends Component {
                             {this.state.textareaVisible ?
                                 <View>
 
-                                <Textarea rowSpan={5} bordered placeholder="Textarea" 
-                                onChangeText={(text) => this.setState({text})}
-                                value={this.state.text}/>
+                                    <Textarea rowSpan={5} bordered placeholder="Textarea"
+                                        onChangeText={(text) => this.setState({ text })}
+                                        value={this.state.text} />
                                     <TouchableHighlight
                                         onPress={this.addComments.bind(this)}>
                                         <Text>Comment</Text>
                                     </TouchableHighlight>
-                                    <LoginButton
-                                        publishPermissions={["manage_pages", "publish_pages"]}
-                                        onLoginFinished={
-                                            (error, result) => {
-                                                if (error) {
-                                                    alert("login has error: " + result.error);
-                                                } else if (result.isCancelled) {
-                                                    alert("login is cancelled.");
-                                                } else {
-                                                    AccessToken.getCurrentAccessToken().then(
-                                                        (data) => {
-
-                                                            const a = data.accessToken.toString();
-                                                        }
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        onLogoutFinished={() => alert("logout.")} />
                                 </View>
                                 :
                                 null}
+                            {this.state.accessToken.length === 0 ?
+                                <LoginButton
+                                    publishPermissions={["manage_pages", "publish_pages"]}
+                                    onLoginFinished={
+                                        (error, result) => {
+                                            if (error) {
+                                                alert("login has error: " + result.error);
+                                            } else if (result.isCancelled) {
+                                                alert("login is cancelled.");
+                                            } else {
+                                                AccessToken.getCurrentAccessToken().then(
+                                                    (data) => {
+
+                                                        const a = data.accessToken.toString();
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                    onLogoutFinished={() => alert("logout.")} />
+                                :
+                                null}
+
                         </View>
                     </View>
                 </Modal>
@@ -227,6 +243,11 @@ export default CardComponent;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    modalContainer: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
