@@ -25,7 +25,7 @@ class CardComponent extends Component {
             contentDescription: 'Facebook sharing is easy!'
         };
 
-        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '', text: '', message: props.message, link: props.link, id: props.id, picture: props.picture,showLike:false,username:props.username,merchantId:props.merchantId};
+        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '', text: '', message: props.message, link: props.link, id: props.id, picture: props.picture,showLike:false,username:props.username,merchantId:props.merchantId,actionMessage: ''};
     }
 
     componentDidMount() {
@@ -40,7 +40,7 @@ class CardComponent extends Component {
 
 
     setModalVisible(visible) {
-        this.setState({ modalVisible: visible });
+        this.setState({ modalVisible: visible,actionMessage:false,textareaVisible:false });
     }
 
     setTextAreaVisible(visible) {
@@ -49,6 +49,7 @@ class CardComponent extends Component {
 
     shareLinkWithShareDialog() {
         var tmp = this;
+        //this.setState({actionMessage: ''});
         ShareDialog.canShow(this.state.shareLinkContent).then(
             function (canShow) {
                 if (canShow) {
@@ -61,7 +62,7 @@ class CardComponent extends Component {
                     // alert('Share cancelled');
                 } else {
                     this.updateDB("shares");
-                    this.setState({showLike:true});
+                    this.setState({showLike:true, actionMessage: 'Your action was successful !!'});
                 }
             },
             function (error) {
@@ -95,6 +96,7 @@ class CardComponent extends Component {
         });
     }
     fetchComments() {
+        //this.setState({actionMessage: ''});
         return fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -107,7 +109,7 @@ class CardComponent extends Component {
                     }).then((response) => {
                         // alert('You have commented on this post on Facebook');
                         this.updateDB("comments");
-                        this.setState({showLike:true});
+                        this.setState({showLike:true, actionMessage: 'Your action was successful !!'});
                     });
                 })
             })
@@ -119,6 +121,7 @@ class CardComponent extends Component {
     }
 
     handleLike() {
+        //this.setState({actionMessage: ''});
         return fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -131,7 +134,7 @@ class CardComponent extends Component {
                     }).then((response) => {
                         // alert('You have liked this post on Facebook');
                         this.updateDB("likes");
-                        this.setState({showLike:true});
+                        this.setState({showLike:true, actionMessage: 'Your action was successful !!'});
                     });
                 })
             })
@@ -207,8 +210,8 @@ class CardComponent extends Component {
                                 }}>
                                 <Text>Hide Modal</Text>
                             </TouchableHighlight>
-                            {this.state.showLike===true?
-                            <Text>Your acitivity was successful</Text>
+                            {this.state.actionMessage ?
+                            <Text>{this.state.actionMessage}</Text>
                             :null}
                             {this.state.textareaVisible ?
                                 <View style={{width: 200}}>

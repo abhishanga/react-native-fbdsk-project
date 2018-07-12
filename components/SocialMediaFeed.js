@@ -33,6 +33,9 @@ class SocialMediaFeed extends Component {
 
             }
         )
+        this.props.navigation.addListener('willFocus', (payload) => {
+            this.getSocialMediaFeed();
+        })
     }
 
     getSocialMediaFeed() {
