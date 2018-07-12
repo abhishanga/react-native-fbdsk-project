@@ -196,15 +196,15 @@ class CardComponent extends Component {
                                 <Text>Hide Modal</Text>
                             </TouchableHighlight>
                             {this.state.textareaVisible ?
-                                <View>
+                                <View style={{width: 200}}>
 
                                     <Textarea rowSpan={5} bordered placeholder="Textarea"
                                         onChangeText={(text) => this.setState({ text })}
                                         value={this.state.text} />
-                                    <TouchableHighlight
+                                    <Button info
                                         onPress={this.addComments.bind(this)}>
                                         <Text>Comment</Text>
-                                    </TouchableHighlight>
+                                    </Button>
                                 </View>
                                 :
                                 null}
