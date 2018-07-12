@@ -20,7 +20,7 @@ class MerchantEnrollment extends Component {
     static navigationOptions = {
 
         tabBarIcon: ({ tintColor }) => (
-            <Icon name="ios-add-circle" style={{ color: tintColor }} />
+            <Icon type="FontAwesome" name="trophy" style={{ color: tintColor }} />
         )
     }
 

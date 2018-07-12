@@ -34,9 +34,6 @@ class MainScreen extends Component {
             HomeTab: {
                 screen: SocialMediaFeed
             },
-            RewardsTab: {
-                screen: RewardsTab
-            },
             ActivityTab: {
                 screen: ActivityTab
             },
