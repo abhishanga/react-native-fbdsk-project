@@ -20,11 +20,11 @@ class MerchantEnrollment extends Component {
     static navigationOptions = {
 
         tabBarIcon: ({ tintColor }) => (
-            <Icon type="FontAwesome" name="trophy" style={{ color: tintColor }} />
+            <Icon type="FontAwesome" name="gears" style={{ color: tintColor }} />
         )
     }
 
-    onPress = (username, merchantId, flag) => {
+    onPressEnroll = (username, merchantId, flag) => {
         const path = flag ? 'subscribeFeeds' : 'unsubscribeFeeds';
         const url = `https://visa-engage.appspot.com/${path}?userId=${username}&merchantId=${merchantId}`
         fetch(url, {
@@ -36,11 +36,28 @@ class MerchantEnrollment extends Component {
                     console.log("Response:", response);
                 }
                 else {
-                    console.log("There was an error posting");
+                    console.log("There was an error enrolling merchants");
 
                 }
             }).catch((error) => {
-                Alert.alert('problem while adding data');
+                Alert.alert('There was an error enrolling merchants');
+            })
+    }
+
+    onPressRedeem = (merchantId) => {
+        const username = 'suraj_test';//this.props.navigation.state.params.username;
+        const url = `https://visa-engage.appspot.com/redeem?userId=${username}&merchantId=${merchantId}`
+        fetch(url, {
+            method: 'POST'
+        }).
+            then((response) => {
+                if (response.status === 200) {
+                    this.fetchMerchantList();
+                    this.fetchBalance();
+                }
+                else {
+                    console.log("There was an error redeeming rewards");
+                }
             })
     }
 
@@ -105,7 +122,7 @@ class MerchantEnrollment extends Component {
                             return (
                                 <ListItem key={"enrolled" + idx} avatar>
                                     <Left>
-                                        <Button bordered disabled={field.redeemAmount < 1} onPress={() => this.onPress('suraj_test', field.merchantId, false)}>
+                                        <Button bordered disabled={field.redeemAmount < 1} onPress={() => this.onPressRedeem(field.merchantId)}>
                                             <Icon type="MaterialCommunityIcons" name="square-inc-cash" style={{ color: "#85bb65" }} />
                                         </Button>
                                     </Left>
@@ -116,7 +133,7 @@ class MerchantEnrollment extends Component {
                                     <Right>
                                         <Icon type="MaterialCommunityIcons" name="minus-box"
                                             style={{ color: "#85bb65" }}
-                                            onPress={() => this.onPress('suraj_test', field.merchantId, false)} />
+                                            onPress={() => this.onPressEnroll('suraj_test', field.merchantId, false)} />
                                     </Right>
                                 </ListItem>
                             );
@@ -130,7 +147,7 @@ class MerchantEnrollment extends Component {
                             return (
                                 <ListItem key={"unenrolled" + idx} avatar>
                                     <Left>
-                                        <Button bordered disabled transparent onPress={() => this.onPress('suraj_test', field.merchantId, false)}>
+                                        <Button bordered disabled transparent onPress={() => this.onPressRedeem(field.merchantId)}>
                                             <Icon type="MaterialCommunityIcons" name="square-inc-cash" style={{ color: "#85bb65" }} />
                                         </Button>
                                     </Left>
@@ -139,7 +156,9 @@ class MerchantEnrollment extends Component {
                                         <Text note>Reward Amount: ${field.redeemAmount}</Text>
                                     </Body>
                                     <Right>
-                                        <Icon type="MaterialCommunityIcons" name="plus-box" style={{ color: "#85bb65" }} onPress={() => this.onPress('suraj_test', field.merchantId, true)} />
+                                        <Icon type="MaterialCommunityIcons" name="plus-box"
+                                            style={{ color: "#85bb65" }}
+                                            onPress={() => this.onPressEnroll('suraj_test', field.merchantId, true)} />
                                     </Right>
                                 </ListItem>
                             );
