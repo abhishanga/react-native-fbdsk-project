@@ -20,9 +20,13 @@ class MainScreen extends Component {
         title: "Visa Engage",
         headerRight: <Icon style={{ paddingRight: 10 }} name="ios-notifications" />
     }
+    constructor(props) {
+        super(props);
+       this.state = {
+        username: props.navigation.state.params ? props.navigation.state.params.username: ''
+       }
+      }
 
-    componentDidMount(){
-    }
 
     render() {
         const AppTabNavigator = TabNavigator({
@@ -59,7 +63,7 @@ class MainScreen extends Component {
             })
         
         return (
-            <AppTabNavigator />
+            <AppTabNavigator screenProps={this.state.username}/>
         );
     }
 }

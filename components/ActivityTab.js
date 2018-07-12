@@ -20,12 +20,13 @@ class ActivityTab extends Component {
     constructor(props) {
         super(props);
        this.state = {
-           activity: []
+           activity: [],
+           username: props.screenProps
        }
       }
     componentDidMount(){
         const entry = this.state
-        return fetch(`https://visa-engage.appspot.com/activity/history?userId=suraj_test`)
+        return fetch(`https://visa-engage.appspot.com/activity/history?userId=${this.state.username}`)
         .then((response) => response.json())
         .then((responseJson) => {
             this.setState({activity: responseJson});

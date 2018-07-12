@@ -20,6 +20,7 @@ class SocialMediaFeed extends Component {
         this.state = {
             socialmediafeed: [],
             accessToken: "",
+            username: props.screenProps,
             feed: []
         }
     }
@@ -36,7 +37,8 @@ class SocialMediaFeed extends Component {
 
     getSocialMediaFeed() {
         const entry = this.state
-        return fetch(`https://visa-engage.appspot.com/fetchFeeds?userId=suraj_test`)
+        debugger;
+        return fetch(`https://visa-engage.appspot.com/fetchFeeds?userId=${this.state.username}`)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({ socialmediafeed: responseJson }, this.getInformation);
