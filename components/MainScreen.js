@@ -3,7 +3,8 @@ import {
     View,
     Text,
     StyleSheet,
-    Platform
+    Platform,
+    ImageBackground
 } from "react-native";
 
 import SocialMediaFeed from "./SocialMediaFeed.js";

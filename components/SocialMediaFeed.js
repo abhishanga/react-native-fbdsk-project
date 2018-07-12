@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet,ImageBackground } from 'react-native'
 import { Card, CardItem, Container, Content, Thumbnail, Icon, Button } from 'native-base';
 import { red, orange, blue, lightPurp, pink, white } from '../utils/colors';
 import CardComponent from './CardComponent';
@@ -93,12 +93,14 @@ class SocialMediaFeed extends Component {
         if (feed.length > 0) {
             return (
                 <Container style={styles.container}>
+                <ImageBackground source={require('../assets/card-bg.png')} style={styles.imageContainer}>
                     <View style={styles.item}>
                         <View style={styles.thumbnail}>
                             <Thumbnail source={{ uri: uri }} />
                         </View>
                         <Text style={styles.noDataText}>👋 Share your post on social media to earn cashback!</Text>
                     </View>
+                    </ImageBackground>
                     {this.state.accessToken.length===0?
                     <LoginButton
                         publishPermissions={["manage_pages", "publish_pages"]}
@@ -140,6 +142,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white'
+    },
+    imageContainer: {
+        flex: 1,
+        width: '100%',
+        height: '100%'
     },
     noDataText: {
         fontSize: 20,
