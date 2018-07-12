@@ -25,7 +25,7 @@ class CardComponent extends Component {
             contentDescription: 'Facebook sharing is easy!'
         };
 
-        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '', text: '', message: props.message, link: props.link, id: props.id, picture: props.picture,showLike:false };
+        this.state = { shareLinkContent: shareLinkContent, modalVisible: false, textareaVisible: false, accessToken: '', text: '', message: props.message, link: props.link, id: props.id, picture: props.picture,showLike:false,username:props.username,merchantId:props.merchantId};
     }
 
     componentDidMount() {
@@ -58,9 +58,10 @@ class CardComponent extends Component {
         ).then(
             function (result) {
                 if (result.isCancelled) {
-                    alert('Share cancelled');
+                    // alert('Share cancelled');
                 } else {
-                    alert('Share this post on Facebook');
+                    this.updateDB("shares");
+                    this.setState({showLike:true});
                 }
             },
             function (error) {
@@ -86,6 +87,13 @@ class CardComponent extends Component {
         );
     }
 
+    updateDB(action){
+        fetch(`https://visa-engage.appspot.com/f/${action}?postId=${this.state.id}&userId=${this.state.username}&merchantId=${this.state.merchantId}`, {
+            method: 'POST'
+        }).then((response) => {
+            console.log("success");
+        });
+    }
     fetchComments() {
         return fetch(`https://graph.facebook.com/me/accounts?access_token=${this.state.accessToken}`)
             .then((response) => response.json())
@@ -97,7 +105,9 @@ class CardComponent extends Component {
                     fetch(`https://graph.facebook.com/${this.state.id}/comments?message=${this.state.text}&access_token=${this.state.page_access_token}`, {
                         method: 'POST'
                     }).then((response) => {
-                        alert('You have commented on this post on Facebook');
+                        // alert('You have commented on this post on Facebook');
+                        this.updateDB("comments");
+                        this.setState({showLike:true});
                     });
                 })
             })
@@ -119,7 +129,9 @@ class CardComponent extends Component {
                     fetch(`https://graph.facebook.com/${this.state.id}/likes?access_token=${this.state.page_access_token}`, {
                         method: 'POST'
                     }).then((response) => {
-                        alert('You have liked this post on Facebook');
+                        // alert('You have liked this post on Facebook');
+                        this.updateDB("likes");
+                        this.setState({showLike:true});
                     });
                 })
             })
@@ -195,6 +207,9 @@ class CardComponent extends Component {
                                 }}>
                                 <Text>Hide Modal</Text>
                             </TouchableHighlight>
+                            {this.state.showLike===true?
+                            <Text>Your acitivity was successful</Text>
+                            :null}
                             {this.state.textareaVisible ?
                                 <View style={{width: 200}}>
 

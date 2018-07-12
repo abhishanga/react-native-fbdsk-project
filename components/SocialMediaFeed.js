@@ -64,6 +64,7 @@ class SocialMediaFeed extends Component {
                         .then((response) => response.json())
                         .then((responseJson) => {
                             if (!responseJson.hasOwnProperty('error')) {
+                                responseJson.merchantId = x.merchantId;
                                 this.test(responseJson);
 
                             }
@@ -126,7 +127,7 @@ class SocialMediaFeed extends Component {
                     <Content>
                         {this.state.feed.map((x) => (
 
-                            <CardComponent imageSource="1" likes="101" message={x.message} id={x.id} picture={x.full_picture} link={x.permalink_url} />
+                            <CardComponent imageSource="1" likes="101" merchantId={x.merchantId} message={x.message} id={x.id} picture={x.full_picture} link={x.permalink_url} username={this.state.username}/>
 
                         ))}
                     </Content>
